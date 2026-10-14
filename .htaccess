@@ -1,0 +1,44 @@
+# codigoprofissional.com.br (HostGator / Apache)
+Options -Indexes
+ErrorDocument 404 /pack-insta-black-friday-express/404.html
+
+<IfModule mod_rewrite.c>
+RewriteEngine On
+# 1) https e sem www (preserva UTMs)
+RewriteCond %{HTTPS} off [OR]
+RewriteCond %{HTTP_HOST} ^www\. [NC]
+RewriteRule ^(.*)$ https://codigoprofissional.com.br/$1 [R=301,L,NE]
+# 2) pasta sem barra final -> com barra (imagens usam caminho relativo)
+RewriteRule ^pack-insta-black-friday-express$ https://codigoprofissional.com.br/pack-insta-black-friday-express/ [R=301,L,NE]
+# 3) raiz leva ao pack enquanto não existir página inicial (temporário)
+RewriteRule ^$ https://codigoprofissional.com.br/pack-insta-black-friday-express/ [R=302,L,NE]
+</IfModule>
+
+<IfModule mod_mime.c>
+AddType image/avif .avif
+AddType image/webp .webp
+AddType font/woff2 .woff2
+AddType image/svg+xml .svg
+AddType text/plain .txt
+AddCharset utf-8 .html .css .txt
+</IfModule>
+
+<IfModule mod_deflate.c>
+AddOutputFilterByType DEFLATE text/html text/css text/plain application/javascript image/svg+xml
+</IfModule>
+
+<IfModule mod_headers.c>
+# imagens e fontes: 30 dias
+<FilesMatch "\.(avif|webp|jpg|png|svg|woff2)$">
+Header set Cache-Control "public, max-age=2592000"
+</FilesMatch>
+# css: 1 dia; html: sempre confere atualização
+<FilesMatch "\.css$">
+Header set Cache-Control "public, max-age=86400"
+</FilesMatch>
+<FilesMatch "\.(html|txt)$">
+Header set Cache-Control "no-cache"
+</FilesMatch>
+Header always set Strict-Transport-Security "max-age=31536000"
+Header always set X-Content-Type-Options "nosniff"
+</IfModule>

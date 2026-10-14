@@ -1,0 +1,6 @@
+---
+deployment:
+  tasks:
+    - export DEPLOYPATH=/home1/nat86051/public_html/
+    - /bin/mkdir -p $DEPLOYPATH
+    - /bin/cp -R pack-insta-black-friday-express $DEPLOYPATH
