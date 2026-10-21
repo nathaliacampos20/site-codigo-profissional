@@ -4,5 +4,5 @@ deployment:
     - export DEPLOYPATH=/home1/nat86051/public_html/
     - /bin/mkdir -p $DEPLOYPATH
     - /bin/cp -R pack-insta-black-friday-express $DEPLOYPATH
-    - /bin/mkdir -p $DEPLOYPATH/packbeleza
-    - /bin/cp -R packbeleza/. $DEPLOYPATH/packbeleza/
+    - /bin/mkdir -p /home1/nat86051/packbeleza
+    - /bin/cp -R packbeleza/. /home1/nat86051/packbeleza/
