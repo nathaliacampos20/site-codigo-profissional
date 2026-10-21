@@ -10,6 +10,9 @@ RewriteCond %{HTTP_HOST} ^www\. [NC]
 RewriteRule ^(.*)$ https://codigoprofissional.com.br/$1 [R=301,L,NE]
 # 2) pasta sem barra final -> com barra (imagens usam caminho relativo)
 RewriteRule ^pack-insta-black-friday-express$ https://codigoprofissional.com.br/pack-insta-black-friday-express/ [R=301,L,NE]
+# Beleza só no subdomínio: /packbeleza/ no domínio principal -> subdomínio
+RewriteCond %{HTTP_HOST} ^(www\.)?codigoprofissional\.com\.br$ [NC]
+RewriteRule ^packbeleza(/.*)?$ https://packbeleza.codigoprofissional.com.br$1 [R=301,L,NE]
 # 3) raiz leva ao pack enquanto não existir página inicial (temporário)
 RewriteRule ^$ https://codigoprofissional.com.br/pack-insta-black-friday-express/ [R=302,L,NE]
 </IfModule>
