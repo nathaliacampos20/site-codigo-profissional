@@ -140,7 +140,7 @@
 <p>Este site não é afiliado ao Facebook ou a qualquer entidade do Facebook. Depois que você sair do Facebook, a responsabilidade não é deles e sim do nosso site. A compra desse material não garante nenhum tipo de resultado.</p></div>
 <p class="rodape__barra">Todos os Direitos Reservados ©</p>
 </footer>
-<script type="application/json" id="lp-config">{"pixel":{"id":"4663500790638149","carregar":"apos-load","eventosAoAbrir":[{"nome":"PageView"},{"nome":"ViewContent","params":{"content_name":"Pack Profissional da Beleza","value":67,"currency":"BRL"}}],"eventoClique":{"nome":"CliqueCheckout","personalizado":true}},"checkout":{"repassar":"^(utm_|fbclid$|src$|sck$|xcod$)","montarSck":true}}</script>
+<script type="application/json" id="lp-config">{"pixel":{"id":"4663500790638149","carregar":"imediato","eventosAoAbrir":[{"nome":"PageView"},{"nome":"ViewContent","params":{"content_name":"Pack Profissional da Beleza","value":67,"currency":"BRL"}}],"eventoClique":{"nome":"CliqueCheckout","personalizado":true}},"checkout":{"repassar":"^(utm_|fbclid$|src$|sck$|xcod$)","montarSck":true}}</script>
 <script>(function () {
 var C = JSON.parse(document.getElementById('lp-config').textContent);
 var w = window, d = document;
@@ -160,7 +160,16 @@ w.addEventListener('load', function () { setTimeout(carregar, px.atrasoMs || 0);
 ['pointerdown', 'keydown', 'scroll', 'touchstart'].forEach(function (ev) { w.addEventListener(ev, carregar, { once: true, passive: true }); });
 }
 fbq('init', px.id);
-(px.eventosAoAbrir || []).forEach(function (e) { e.personalizado ? fbq('trackCustom', e.nome, e.params || {}) : fbq('track', e.nome, e.params || {}); });
+var eid = function (n) { return n + Date.now() + Math.random().toString(36).slice(2, 8); };
+var ids = {};
+(px.eventosAoAbrir || []).forEach(function (e) { ids[e.nome] = eid(e.nome); e.personalizado ? fbq('trackCustom', e.nome, e.params || {}, { eventID: ids[e.nome] }) : fbq('track', e.nome, e.params || {}, { eventID: ids[e.nome] }); });
+var reserva = function (nome, id, params) {
+var q = 'id=' + px.id + '&ev=' + encodeURIComponent(nome) + '&eid=' + encodeURIComponent(id) + '&dl=' + encodeURIComponent(location.href) + '&noscript=1';
+Object.keys(params || {}).forEach(function (k) { q += '&cd[' + encodeURIComponent(k) + ']=' + encodeURIComponent(params[k]); });
+var u = 'https://www.facebook.com/tr?' + q;
+try { if (navigator.sendBeacon && navigator.sendBeacon(u)) return; } catch (e) {  }
+new Image().src = u;
+};
 }
 var ck = C.checkout || {};
 var manter = new RegExp(ck.repassar || '^$');
@@ -180,7 +189,14 @@ var agora = Date.now();
 if (agora - ultimoClique < 1500) return; // duplo toque não gera dois eventos
 ultimoClique = agora;
 var ev = px && px.eventoClique;
-if (ev && w.fbq) ev.personalizado ? fbq('trackCustom', ev.nome, { local: a.dataset.checkout }) : fbq('track', ev.nome, { local: a.dataset.checkout });
+if (!ev || !w.fbq) return;
+var params = { local: a.dataset.checkout }, id = eid(ev.nome);
+var pronto = performance.getEntriesByType('resource').some(function (r) { return r.name.indexOf('signals/config') > -1; });
+if (pronto) { ev.personalizado ? fbq('trackCustom', ev.nome, params, { eventID: id }) : fbq('track', ev.nome, params, { eventID: id }); return; }
+// Pixel ainda não carregou: envia direto e impede o envio em dobro pelo Pixel nesta página
+if (fbq.queue) fbq.queue.length = 0;
+(px.eventosAoAbrir || []).forEach(function (e) { reserva(e.nome, ids[e.nome], e.params); });
+reserva(ev.nome, id, params);
 });
 });
 if ('IntersectionObserver' in w) {
