@@ -6,3 +6,5 @@ deployment:
     - /bin/cp -R pack-insta-black-friday-express $DEPLOYPATH
     - /bin/mkdir -p /home1/nat86051/packbeleza
     - /bin/cp -R packbeleza/. /home1/nat86051/packbeleza/
+    - /bin/mkdir -p /home1/nat86051/packfitness
+    - /bin/cp -R packfitness/. /home1/nat86051/packfitness/
